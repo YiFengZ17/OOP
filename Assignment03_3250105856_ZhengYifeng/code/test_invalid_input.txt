@@ -1,0 +1,9 @@
+
+hello
+go
+go east extra
+GO east
+go nowhere
+go south
+go up
+go down

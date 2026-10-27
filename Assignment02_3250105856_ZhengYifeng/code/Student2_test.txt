@@ -1,0 +1,12 @@
+Alice   3   Math 5   English 4   Physics 3
+Bob     2   Math 3   Programming 5
+Carol   1   English 2
+David   4   Math 4   English 5   Physics 1   Programming 4
+Eve     0
+Frank   2   Physics 5   Programming 3
+Grace   2   Math 1   Art 5
+Henry   1   Math 5
+Ivy     3   English 1   Art 1   History 5
+Jack    2   Programming 1   History 1
+Kate    6   Math 2   English 3   Physics 4   Programming 2   Art 3   History 4
+Leo     0
