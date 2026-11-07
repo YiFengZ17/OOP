@@ -1,0 +1,217 @@
+% Assignment 004 report. Build with: xelatex Assignment04_3250105856_ZhengYifeng.tex
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=2cm, top=1.8cm, bottom=1.8cm]{geometry}
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\setmainfont{TeX Gyre Termes}
+\setmonofont{DejaVu Sans Mono}[Scale=0.85]
+\setCJKmainfont{WenQuanYi Zen Hei}
+\setCJKmonofont{WenQuanYi Zen Hei}[Scale=0.85]
+
+\usepackage{titlesec}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{fancyvrb}
+\usepackage{tikz}
+\usetikzlibrary{positioning, calc}
+\usepackage[hidelinks]{hyperref}
+
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titlespacing*{\section}{0pt}{1ex plus .3ex}{0.5ex}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.35ex}
+\setlist{nosep, leftmargin=1.4em}
+\fvset{fontsize=\footnotesize, frame=single, framesep=2mm, xleftmargin=1mm, xrightmargin=1mm}
+
+\newcommand{\code}[1]{\texttt{#1}}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries Assignment 004: Personal Diary}\\[0.6ex]
+  {\large Program Report}\\[0.6ex]
+  Zheng Yifeng \quad | \quad Student ID: 3250105856
+\end{center}
+
+\section{Introduction}
+
+Personal Diary is a command-line diary made of four programs: \code{pdadd},
+\code{pdlist}, \code{pdshow} and \code{pdremove}. They use the same classes and
+the same data file, \code{diary.txt}, but each one is compiled into its own
+executable and never calls another program. They work together only through the
+data file, redirection, and the script \code{pd.sh}.
+
+The programs were built and tested on Ubuntu 24.04 (Linux) with g++ 13.3.0,
+C++17 and bash.
+
+\section{Program Design}
+
+\textbf{Date} stores the year, month and day. \code{Date::parse} checks a
+\code{YYYYMMDD} string, including the length of each month and leap years.
+\code{toString} turns it back into eight digits with leading zeros, and
+\code{operator<} lets \code{std::map} sort the entries by date.
+
+\textbf{Entry} is one diary entry: a \code{Date} and its lines of text
+(\code{vector<string>}). It only holds data, so it has no \code{.cpp} file.
+
+\textbf{Diary} keeps all entries in \code{std::map<Date, Entry>}. The map keeps
+the dates in order and allows only one entry for each date, so \code{add} can
+simply replace an old entry. \code{Diary} also provides \code{remove},
+\code{find}, \code{listall}, \code{between}, \code{load} and \code{save}.
+
+Every program follows the same steps: check the arguments, parse the date, load
+\code{diary.txt}, do its own job, save the file, and return an exit code.
+Results are written to \code{stdout}, and every message is written to
+\code{stderr}, so the output can be redirected without extra text.
+
+\begin{center}
+\begin{tikzpicture}[
+    box/.style={draw, rounded corners=2pt, minimum height=5.5mm, inner sep=3pt, font=\small},
+    prog/.style={box, minimum width=17mm, font=\small\ttfamily},
+    arr/.style={->, >=stealth},
+    node distance=4mm and 3mm]
+  \node[box] (date)  {Date.h / Date.cpp};
+  \node[box, right=5mm of date] (entry) {Entry.h};
+  \node[box, right=5mm of entry] (diary) {Diary.h / Diary.cpp};
+  \node[font=\footnotesize, above=1mm of entry] {shared code};
+
+  \node[prog, below=9mm of date.south west, anchor=north west] (add) {pdadd};
+  \node[prog, right=of add]  (list)   {pdlist};
+  \node[prog, right=of list] (show)   {pdshow};
+  \node[prog, right=of show] (remove) {pdremove};
+
+  \foreach \p in {add, list, show, remove}
+    \draw[arr, gray] (entry.south) -- (\p.north);
+
+  \node[box, below=8mm of $(list.south)!0.5!(show.south)$] (file) {diary.txt};
+  \foreach \p in {add, list, show, remove}
+    \draw[arr, <->] (\p.south) -- (file.north);
+
+  \node[draw, font=\footnotesize\ttfamily, align=left, right=12mm of remove,
+        inner sep=3pt] (fmt) {20261105\\First day\\Second line\\.\\20261106\\Second day\\.};
+  \node[font=\footnotesize, above=0.5mm of fmt] {diary.txt};
+\end{tikzpicture}
+\end{center}
+
+In \code{diary.txt}, each entry is a date line, its content, and then a line
+with a single ``\code{.}''. This is the same rule that \code{pdadd} uses to read
+its input. Since \code{pdadd} stops at such a line, the content of an entry can
+never contain it, so the dot safely marks the end of each entry.
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}lXl@{}}
+\toprule
+Command & Behaviour & Exit code \\
+\midrule
+\code{pdadd <date>} & Reads lines from \code{stdin} until a single ``\code{.}'' or EOF;
+                      replaces an entry of the same date & 0 / 1 \\
+\code{pdlist [<start> <end>]} & Lists entries in date order, one line each: date, a tab,
+                      and the first line; the range includes both ends & 0 / 1 \\
+\code{pdshow <date>} & Prints only the content, so it can be redirected to \code{pdadd} & 0 / 1 \\
+\code{pdremove <date>} & Removes the entry of that date & 0 / $-1$ \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Running the Programs}
+
+Run these commands in the \code{code} directory. \code{diary.txt} is created in
+the current directory.
+
+\begin{Verbatim}
+for p in pdadd pdlist pdshow pdremove; do
+    g++ -std=c++17 -Wall -Wextra $p.cpp Date.cpp Diary.cpp -o $p; done
+bash pd.sh pdadd 20261105 < input.txt
+bash pd.sh pdlist 20261101 20261130
+bash pd.sh pdshow 20261105 > copy.txt
+bash pd.sh pdremove 20261105
+\end{Verbatim}
+
+\code{pd.sh} runs the program named by its first argument and passes on the
+other arguments and \code{stdin}. Because the script uses \code{set -e}, it also
+returns the exit code of that program. When typing an entry by hand, end it with
+a single ``\code{.}'' or with Ctrl-D (Ctrl-Z on Windows).
+
+\section{Testing}
+
+\code{bash pd.sh test} compiles the four programs into a temporary directory
+and runs six groups of tests there, so the real diary is not changed. Each test
+compares the actual output with the expected output using \code{diff}, and the
+script stops at the first difference.
+
+\begin{enumerate}
+  \item \code{pdadd}: input ended by ``\code{.}'' (the line after it is ignored) and input ended by EOF.
+  \item \code{pdlist}: date order, a range, and a range whose start and end are the same day.
+  \item Adding to the same date again replaces the old content.
+  \item Redirection: \code{pdshow > copy.txt}, then \code{pdadd < copy.txt} for another date.
+  \item \code{pdremove} succeeds once; removing the same date again fails with exit code 255.
+  \item Wrong input: an invalid date (\code{20260230}), a missing argument, and a start date after the end date.
+\end{enumerate}
+
+The actual output is shown below. The messages under group 5 and group 6 are
+expected error messages from the failing commands.
+
+\begin{Verbatim}
+$ bash pd.sh test
+1. 添加：点号结束和文件末尾结束
+2. 列表：日期排序和包含端点的范围
+3. 同一天覆盖
+4. 重定向协作：导出后添加到另一天
+5. 删除成功，以及重复删除返回255
+No entry for this date
+6. 错误输入（下面的报错是预期结果）
+Invalid date
+Please input like this : pdshow YYYYMMDD
+Start date is after end date
+All tests passed.
+\end{Verbatim}
+
+All tests passed, and the programs compiled without warnings under
+\code{-Wall -Wextra}.
+
+\section{Problems Encountered}
+
+\textbf{Calling \code{parse} without an object.} At first \code{parse} was a
+normal member function. When I called \code{Date::parse} in \code{Diary::load} to read a
+date line, the IDE reported ``a nonstatic member reference must be
+relative to a specific object''. The purpose of \code{parse} is to create a
+valid \code{Date}, so there is no \code{Date} object before it is called. I
+made it \code{static}; it returns whether the string is valid and writes the
+result into its second parameter.
+
+\textbf{Handling wrong data safely.} Following suggestions from an AI
+assistant, I added more checks:
+\begin{itemize}
+  \item \code{load} reads into a temporary map and only replaces the diary when the
+        whole file is valid. A bad date line or an entry without the final
+        ``\code{.}'' makes it fail, so a broken file is never half loaded.
+  \item \code{pdadd} checks the state of \code{cin} after reading, and \code{save}
+        checks the file stream after closing it.
+  \item \code{pdadd} and \code{pdlist} open \code{diary.txt} in append mode once
+        before loading. This creates the file on the first run without clearing
+        an existing diary.
+\end{itemize}
+
+\textbf{Testing the exit code of \code{pdremove}.} \code{pdremove} returns
+$-1$, but the shell shows 255, because an exit code only keeps its lowest
+8 bits. The test script therefore checks for 255. I also wrote the tests as
+\code{diff} comparisons in a temporary directory, so they can be repeated
+without checking the output by eye or touching the real diary.
+
+\textbf{Limitation.} \code{pdshow} and \code{pdlist} also save the file at the
+end, as the assignment describes. When two programs are joined by a pipe, such
+as \code{pdshow A | pdadd B}, they run at the same time and may read and write
+\code{diary.txt} together, so this is not safe yet. The redirection test uses a
+temporary file instead. Saving only when the diary has changed would solve this.
+
+\section{Conclusion}
+
+The four programs share \code{Date}, \code{Entry} and \code{Diary}, keep all
+entries in one data file, and work together through redirection and
+\code{pd.sh}. Adding, listing, showing and removing entries all passed the
+tests.
+
+\end{document}
