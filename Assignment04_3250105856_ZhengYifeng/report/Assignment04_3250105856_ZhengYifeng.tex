@@ -1,6 +1,6 @@
 \documentclass[11pt,a4paper]{article}
 
-\usepackage[margin=2.2cm]{geometry}
+\usepackage[margin=2.2cm, top=1.8cm, bottom=1.8cm]{geometry}
 \usepackage{fontspec}
 \setmainfont{TeX Gyre Termes}
 \usepackage{tikz}
@@ -8,7 +8,7 @@
 \usepackage[hidelinks]{hyperref}
 \usepackage{titlesec}
 \titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
-\titlespacing*{\section}{0pt}{1.6ex plus .5ex}{0.8ex}
+\titlespacing*{\section}{0pt}{1.3ex plus .3ex}{0.6ex}
 \usepackage{enumitem}
 \setlist[enumerate]{nosep, leftmargin=1.5em}
 
@@ -60,14 +60,14 @@ messages go to stderr, so the output can be redirected.
   \node[prog, right=of show] (remove) {pdremove};
 
   \coordinate (mid) at ($(list.north)!0.5!(show.north)$);
-  \node[box, above=7mm of mid] (entry) {Entry};
+  \node[box, above=5mm of mid] (entry) {Entry};
   \node[box, left=8mm of entry] (date) {Date};
   \node[box, right=8mm of entry] (diary) {Diary};
 
   \foreach \p in {add, list, show, remove}
     \draw[arr, gray] (entry.south) -- (\p.north);
 
-  \node[box, below=6mm of $(list.south)!0.5!(show.south)$] (file) {diary.txt};
+  \node[box, below=5mm of $(list.south)!0.5!(show.south)$] (file) {diary.txt};
   \foreach \p in {add, remove}
     \draw[arr, <->] (\p.south) -- (file.north);
   \foreach \p in {list, show}
@@ -89,6 +89,13 @@ pipes, removing, and wrong input in a temporary directory. All tests passed.
 \begin{enumerate}
   \item At first parse was a normal member function, so Date::parse could not be
         called without an object. I made it static.
+  \item I used \texttt{std::map<Date, Entry>} because it keeps the entries
+        sorted by date, so pdlist needs no extra sorting, and it allows only one
+        entry for each date, so pdadd can replace an old entry directly. But map
+        must compare its keys, and Date is my own class, so the compiler did not
+        know which date is earlier. I overloaded \texttt{operator<} to compare
+        the year, then the month, then the day. With it, map can sort the
+        entries and find an entry by its date.
   \item pdremove returns $-1$, but the shell shows 255, so the test checks for 255.
   \item At first pdshow and pdlist also saved the file. In a pipe like
         \texttt{pdshow A | pdadd B}, both programs run at the same time, and
