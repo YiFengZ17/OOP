@@ -1,7 +1,7 @@
 % Assignment 004 report. Build with: xelatex Assignment04_3250105856_ZhengYifeng.tex
 \documentclass[11pt,a4paper]{article}
 
-\usepackage[margin=2cm, top=1.8cm, bottom=1.8cm]{geometry}
+\usepackage[margin=2cm, top=1.6cm, bottom=1.6cm]{geometry}
 \usepackage{fontspec}
 \usepackage{xeCJK}
 \setmainfont{TeX Gyre Termes}
@@ -62,7 +62,9 @@ simply replace an old entry. \code{Diary} also provides \code{remove},
 \code{find}, \code{listall}, \code{between}, \code{load} and \code{save}.
 
 Every program follows the same steps: check the arguments, parse the date, load
-\code{diary.txt}, do its own job, save the file, and return an exit code.
+\code{diary.txt}, do its own job, and return an exit code. \code{pdadd} and
+\code{pdremove} change the diary, so they save the file at the end;
+\code{pdlist} and \code{pdshow} only read it and do not write it back.
 Results are written to \code{stdout}, and every message is written to
 \code{stderr}, so the output can be redirected without extra text.
 
@@ -77,7 +79,7 @@ Results are written to \code{stdout}, and every message is written to
   \node[box, right=5mm of entry] (diary) {Diary.h / Diary.cpp};
   \node[font=\footnotesize, above=1mm of entry] {shared code};
 
-  \node[prog, below=9mm of date.south west, anchor=north west] (add) {pdadd};
+  \node[prog, below=7mm of date.south west, anchor=north west] (add) {pdadd};
   \node[prog, right=of add]  (list)   {pdlist};
   \node[prog, right=of list] (show)   {pdshow};
   \node[prog, right=of show] (remove) {pdremove};
@@ -85,9 +87,11 @@ Results are written to \code{stdout}, and every message is written to
   \foreach \p in {add, list, show, remove}
     \draw[arr, gray] (entry.south) -- (\p.north);
 
-  \node[box, below=8mm of $(list.south)!0.5!(show.south)$] (file) {diary.txt};
-  \foreach \p in {add, list, show, remove}
+  \node[box, below=6mm of $(list.south)!0.5!(show.south)$] (file) {diary.txt};
+  \foreach \p in {add, remove}
     \draw[arr, <->] (\p.south) -- (file.north);
+  \foreach \p in {list, show}
+    \draw[arr, <-] (\p.south) -- (file.north);
 
   \node[draw, font=\footnotesize\ttfamily, align=left, right=12mm of remove,
         inner sep=3pt] (fmt) {20261105\\First day\\Second line\\.\\20261106\\Second day\\.};
@@ -118,8 +122,8 @@ Command & Behaviour & Exit code \\
 
 \section{Running the Programs}
 
-Run these commands in the \code{code} directory. \code{diary.txt} is created in
-the current directory.
+Run these commands in the \code{code} directory. \code{diary.txt} is kept in
+the current directory; if it does not exist yet, the diary is treated as empty.
 
 \begin{Verbatim}
 for p in pdadd pdlist pdshow pdremove; do
@@ -143,10 +147,12 @@ compares the actual output with the expected output using \code{diff}, and the
 script stops at the first difference.
 
 \begin{enumerate}
-  \item \code{pdadd}: input ended by ``\code{.}'' (the line after it is ignored) and input ended by EOF.
+  \item First run: \code{pdlist} prints nothing without a data file. \code{pdadd}: input ended by
+        ``\code{.}'' (the line after it is ignored) and input ended by EOF.
   \item \code{pdlist}: date order, a range, and a range whose start and end are the same day.
   \item Adding to the same date again replaces the old content.
-  \item Redirection: \code{pdshow > copy.txt}, then \code{pdadd < copy.txt} for another date.
+  \item Redirection and pipes: \code{pdshow > copy.txt} then \code{pdadd < copy.txt}, and
+        \code{pdshow | pdadd}, each copying an entry to another date.
   \item \code{pdremove} succeeds once; removing the same date again fails with exit code 255.
   \item Wrong input: an invalid date (\code{20260230}), a missing argument, and a start date after the end date.
 \end{enumerate}
@@ -156,10 +162,10 @@ expected error messages from the failing commands.
 
 \begin{Verbatim}
 $ bash pd.sh test
-1. 添加：点号结束和文件末尾结束
+1. 第一次运行列表为空；添加：点号结束和文件末尾结束
 2. 列表：日期排序和包含端点的范围
 3. 同一天覆盖
-4. 重定向协作：导出后添加到另一天
+4. 重定向和管道协作：复制到另一天
 5. 删除成功，以及重复删除返回255
 No entry for this date
 6. 错误输入（下面的报错是预期结果）
@@ -190,9 +196,8 @@ assistant, I added more checks:
         ``\code{.}'' makes it fail, so a broken file is never half loaded.
   \item \code{pdadd} checks the state of \code{cin} after reading, and \code{save}
         checks the file stream after closing it.
-  \item \code{pdadd} and \code{pdlist} open \code{diary.txt} in append mode once
-        before loading. This creates the file on the first run without clearing
-        an existing diary.
+  \item On the first run \code{diary.txt} does not exist yet. \code{load} treats
+        this as an empty diary, so all four programs behave the same way.
 \end{itemize}
 
 \textbf{Testing the exit code of \code{pdremove}.} \code{pdremove} returns
@@ -201,16 +206,19 @@ $-1$, but the shell shows 255, because an exit code only keeps its lowest
 \code{diff} comparisons in a temporary directory, so they can be repeated
 without checking the output by eye or touching the real diary.
 
-\textbf{Limitation.} \code{pdshow} and \code{pdlist} also save the file at the
-end, as the assignment describes. When two programs are joined by a pipe, such
-as \code{pdshow A | pdadd B}, they run at the same time and may read and write
-\code{diary.txt} together, so this is not safe yet. The redirection test uses a
-temporary file instead. Saving only when the diary has changed would solve this.
+\textbf{Pipes and the data file.} At first all four programs saved the file at
+the end, including \code{pdshow} and \code{pdlist}. The two programs in a pipe
+such as \code{pdshow A | pdadd B} run at the same time, so \code{pdadd} could
+load \code{diary.txt} while \code{pdshow} was rewriting it. I repeated this pipe
+100 times with 28 entries: in 26 runs \code{pdadd} refused the incomplete file,
+and in 2 runs only the new entry was left. Since \code{pdshow} and
+\code{pdlist} never change the diary, I removed their \code{save} calls. After
+this change all 100 runs kept all 29 entries.
 
 \section{Conclusion}
 
 The four programs share \code{Date}, \code{Entry} and \code{Diary}, keep all
-entries in one data file, and work together through redirection and
+entries in one data file, and work together through redirection, pipes and
 \code{pd.sh}. Adding, listing, showing and removing entries all passed the
 tests.
 

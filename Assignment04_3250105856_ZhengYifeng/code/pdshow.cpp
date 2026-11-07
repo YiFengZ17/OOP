@@ -24,9 +24,6 @@ int main(int argc,char* argv[]){
     for(const auto& line : entry.content){
         std::cout << line << '\n';
     }
-    if(!diary.save("diary.txt")){
-        std::cerr << "Failed to save diary\n";
-        return 1;
-    }
+    // 只读不改，不写回文件，避免管道中与其他程序同时写
     return 0;
 }

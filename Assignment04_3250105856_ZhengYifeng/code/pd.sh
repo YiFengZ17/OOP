@@ -26,7 +26,9 @@ done
 cp "$DIR/pd.sh" "$TEST_DIR/pd.sh"
 cd "$TEST_DIR"
 
-echo "1. 添加：点号结束和文件末尾结束"
+echo "1. 第一次运行列表为空；添加：点号结束和文件末尾结束"
+bash pd.sh pdlist > actual.txt
+test ! -s actual.txt
 printf 'Second day\n.\nIgnored line\n' > input.txt
 bash pd.sh pdadd 20261106 < input.txt
 printf 'First day\nSecond line\n' > input.txt
@@ -53,10 +55,13 @@ bash pd.sh pdadd 20261105 < input.txt
 bash pd.sh pdshow 20261105 > actual.txt
 diff input.txt actual.txt
 
-echo "4. 重定向协作：导出后添加到另一天"
+echo "4. 重定向和管道协作：复制到另一天"
 bash pd.sh pdshow 20261105 > copy.txt
 bash pd.sh pdadd 20261107 < copy.txt
 bash pd.sh pdshow 20261107 > actual.txt
+diff copy.txt actual.txt
+bash pd.sh pdshow 20261105 | bash pd.sh pdadd 20261108
+bash pd.sh pdshow 20261108 > actual.txt
 diff copy.txt actual.txt
 
 echo "5. 删除成功，以及重复删除返回255"
@@ -68,7 +73,7 @@ else
     test "$?" -eq 255
 fi
 bash pd.sh pdlist > actual.txt
-printf '20261105\tUpdated content\n20261106\tSecond day\n' > expected.txt
+printf '20261105\tUpdated content\n20261106\tSecond day\n20261108\tUpdated content\n' > expected.txt
 diff expected.txt actual.txt
 
 echo "6. 错误输入（下面的报错是预期结果）"

@@ -1,6 +1,5 @@
 #include "Diary.h"
 #include <iostream>
-#include <fstream>
 #include <vector>
 
 int main(int argc,char* argv[]){
@@ -19,14 +18,6 @@ int main(int argc,char* argv[]){
             return 1;
         }
     }
-    // 第一次运行时创建空文件，不清空已有日记
-    std::ofstream file("diary.txt",std::ios::app);
-    if(!file.is_open()){
-        std::cerr << "Cannot open diary.txt\n";
-        return 1;
-    }
-    file.close();
-
     Diary diary;
     if(!diary.load("diary.txt")){
         std::cerr << "Failed to load diary\n";
@@ -47,9 +38,6 @@ int main(int argc,char* argv[]){
         }
         std::cout << '\n';
     }
-    if(!diary.save("diary.txt")){
-        std::cerr << "Failed to save diary\n";
-        return 1;
-    }
+    // 只读不改，不写回文件，避免管道中与其他程序同时写
     return 0;
 }

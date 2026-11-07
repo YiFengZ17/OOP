@@ -1,6 +1,7 @@
 #include"Diary.h"
 #include<string>
 #include<fstream>
+#include<filesystem>
 
 
 void Diary::add(const Entry& entry){
@@ -26,6 +27,11 @@ bool Diary::load(const std::string& path){
     std::map<Date,Entry> loaded;
     std::string line;
 
+    // 第一次运行时文件还不存在，视为空日记
+    if(!std::filesystem::exists(path)){
+        entries.clear();
+        return true;
+    }
     if(!in.is_open()){
         return false;
     }
