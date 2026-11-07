@@ -1,6 +1,6 @@
 \documentclass[11pt,a4paper]{article}
 
-\usepackage[margin=2.5cm]{geometry}
+\usepackage[margin=2.2cm]{geometry}
 \usepackage{fontspec}
 \setmainfont{TeX Gyre Termes}
 \usepackage{tikz}
@@ -8,7 +8,9 @@
 \usepackage[hidelinks]{hyperref}
 \usepackage{titlesec}
 \titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
-\titlespacing*{\section}{0pt}{2ex plus .5ex}{1ex}
+\titlespacing*{\section}{0pt}{1.6ex plus .5ex}{0.8ex}
+\usepackage{enumitem}
+\setlist[enumerate]{nosep, leftmargin=1.5em}
 
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.5ex}
@@ -23,28 +25,30 @@
 
 \section{Introduction}
 
-Personal Diary is a command-line diary made of four programs: pdadd, pdlist,
-pdshow and pdremove. They share the same classes and keep all entries in one
-file, diary.txt. Dates are written as YYYYMMDD. The programs were built with
-g++ 13.3.0 (C++17) on Ubuntu 24.04.
+\begin{enumerate}
+  \item Personal Diary is a command-line diary made of four programs: pdadd,
+        pdlist, pdshow and pdremove.
+  \item They share the same classes and keep all entries in one file,
+        diary.txt. Dates are written as YYYYMMDD.
+  \item The programs were built with g++ 13.3.0 (C++17) on Ubuntu 24.04.
+\end{enumerate}
 
 \section{Program Design}
 
-Date stores the year, month and day. It checks whether a date is valid,
-including leap years, and compares two dates.
-
-Entry is one diary entry: a date and its lines of text.
-
-Diary keeps all entries in a map sorted by date, so each date has only one
-entry. It loads and saves diary.txt, where each entry is a date line, its
-content, and a line with a single ``.''.
-
-Each program checks its arguments, loads the diary and does its own job. pdadd
-reads lines until ``.'' or the end of input, and replaces an old entry of the
-same date. pdlist lists all entries, or only those between two dates. pdshow
-prints one entry. pdremove returns 0 on success and $-1$ on failure. Only pdadd
-and pdremove save the file, because pdlist and pdshow do not change it. Error
-messages go to stderr, so the output can be redirected.
+\begin{enumerate}
+  \item Date stores the year, month and day. It checks whether a date is valid,
+        including leap years, and compares two dates.
+  \item Entry is one diary entry: a date and its lines of text.
+  \item Diary keeps all entries in a map sorted by date, so each date has only
+        one entry. It loads and saves diary.txt, where each entry is a date
+        line, its content, and a line with a single ``.''.
+  \item pdadd reads lines until ``.'' or the end of input, and replaces an old
+        entry of the same date. pdlist lists all entries, or only those between
+        two dates. pdshow prints one entry. pdremove returns 0 on success and
+        $-1$ on failure.
+  \item Only pdadd and pdremove save the file, because pdlist and pdshow do not
+        change it. Error messages go to stderr, so the output can be redirected.
+\end{enumerate}
 
 \begin{center}
 \begin{tikzpicture}[
@@ -75,28 +79,42 @@ messages go to stderr, so the output can be redirected.
 
 \section{Testing}
 
-Each program is compiled with Date.cpp and Diary.cpp, as described in
-README.md. pd.sh runs a program by its name, for example
-\texttt{bash pd.sh pdshow 20261105}.
-
-\texttt{bash pd.sh test} tests adding, listing, replacing, redirection and
-pipes, removing, and wrong input in a temporary directory. All tests passed.
+\begin{enumerate}
+  \item Each program is compiled with Date.cpp and Diary.cpp, as described in
+        README.md.
+  \item pd.sh runs a program by its name, for example
+        \texttt{bash pd.sh pdshow 20261105}.
+  \item \texttt{bash pd.sh test} tests adding, listing, replacing, redirection
+        and pipes, removing, and wrong input in a temporary directory. All tests
+        passed.
+\end{enumerate}
 
 \section{Problems}
 
-At first parse was a normal member function, so Date::parse could not be called
-without an object. I made it static.
+\begin{enumerate}
+  \item At first parse was a normal member function, so Date::parse could not be
+        called without an object. I made it static.
+  \item pdremove returns $-1$, but the shell shows 255, so the test checks for 255.
+  \item At first pdshow and pdlist also saved the file. In a pipe like
+        \texttt{pdshow A | pdadd B}, both programs run at the same time, and
+        entries were sometimes lost. Now they do not save the file.
+\end{enumerate}
 
-pdremove returns $-1$, but the shell shows 255, so the test checks for 255.
+\section{AI Usage Statement}
 
-At first pdshow and pdlist also saved the file. In a pipe like
-\texttt{pdshow A | pdadd B}, both programs run at the same time, and entries
-were sometimes lost. Now they do not save the file.
+\begin{enumerate}
+  \item I used AI to learn and review the related knowledge, and to help with
+        a small amount of debugging.
+  \item I used AI to write the test script.
+  \item I used AI to add safety checks to the four main programs.
+\end{enumerate}
 
 \section{Conclusion}
 
-The programs can add, list, show and remove diary entries, and work together
-through redirection, pipes and pd.sh. Build and run instructions are in
-README.md.
+\begin{enumerate}
+  \item The programs can add, list, show and remove diary entries, and work
+        together through redirection, pipes and pd.sh.
+  \item Build and run instructions are in README.md.
+\end{enumerate}
 
 \end{document}
