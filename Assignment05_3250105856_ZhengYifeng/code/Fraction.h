@@ -8,7 +8,7 @@ class Fraction{
 public:
     Fraction(); // default ctor
     Fraction(long long numerator,long long denominator); // normalization ctor
-    Fraction(const Fraction& other); //default copy ctor
+    Fraction(const Fraction& other);
     Fraction& operator=(const Fraction& other); // '=' overloading must be a member function
 
     std::string ToString() const;
@@ -37,6 +37,6 @@ bool operator<=(const Fraction& a, const Fraction& b);
 bool operator==(const Fraction& a, const Fraction& b);
 bool operator!=(const Fraction& a, const Fraction& b);
 
-std::ostream& operator<<(std::ostream& os, Fraction& a);
+std::ostream& operator<<(std::ostream& os, const Fraction& a);
 std::istream& operator>>(std::istream& is, Fraction& a);
 #endif

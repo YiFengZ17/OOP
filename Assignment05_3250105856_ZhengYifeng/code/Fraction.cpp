@@ -40,11 +40,10 @@ Fraction::Fraction(long long numerator,long long denominator): nume(numerator),d
     }
 }
 
-// default copy ctor
+// Copying an already reduced fraction preserves its representation.
 Fraction::Fraction(const Fraction& other): nume(other.nume), deno(other.deno) {}
 
-// '=' overloading must be member function to avoid compiler's confussion
-// return type first, in-class later
+// Return the left operand so assignments can be chained.
 Fraction& Fraction::operator=(const Fraction& other){
     nume = other.nume;
     deno = other.deno;
@@ -54,7 +53,7 @@ Fraction& Fraction::operator=(const Fraction& other){
 std::string Fraction::ToString()const{
     return std::to_string(this->nume) + "/" + std::to_string(this->deno);
 }
-// transform double to Fraction
+// Remove the decimal point and keep track of its original place value.
 Fraction Fraction::fromDecimal(const std::string text) {
     std::string digits = text;
     const auto dot = std::find(digits.begin(),digits.end(),'.');//find the position of '.' using iterator
@@ -72,14 +71,13 @@ Fraction Fraction::fromDecimal(const std::string text) {
 
     return Fraction(std::stoll(digits), denominator);//stoll transform string to long long 
 }
-// transform Fraction to double
-Fraction:: operator double() const{
-    return static_cast<double>(nume) / deno; // because of the explicit type, use static_cast transform
+
+Fraction::operator double() const {
+    return static_cast<double>(nume) / static_cast<double>(deno);//because of explicit,using static_cast<double>
 }
 
-std::ostream& operator<<(std::ostream& os, Fraction& a){
-    os << a.numerator() << '/' << a.denominator();
-    return os;
+std::ostream& operator<<(std::ostream& os, const Fraction& a) {
+    return os << a.ToString();
 }
 std::istream& operator>>(std::istream& is, Fraction& a){
     long long numerator;
