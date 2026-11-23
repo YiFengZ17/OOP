@@ -43,7 +43,7 @@ Fraction::Fraction(long long numerator,long long denominator): nume(numerator),d
 // Copying an already reduced fraction preserves its representation.
 Fraction::Fraction(const Fraction& other): nume(other.nume), deno(other.deno) {}
 
-// Return the left operand so assignments can be chained.
+// overloading '=' operator must be non-static member function
 Fraction& Fraction::operator=(const Fraction& other){
     nume = other.nume;
     deno = other.deno;
@@ -55,11 +55,11 @@ std::string Fraction::toString()const{
 }
 // Remove the decimal point and keep track of its original place value.
 Fraction Fraction::fromDecimal(const std::string& text) {
-    // Allow one leading sign, then only digits and at most one '.'.
-    size_t start = (!text.empty() && (text[0] == '+' || text[0] == '-')) ? 1 : 0;
+    auto start = (!text.empty() && (text[0] == '+' || text[0] == '-')) ? 1 : 0;//find the start position
     int digitCount = 0;
     int dotCount = 0;
-    for (size_t i = start; i < text.size(); i++) {
+    // iterate the whole string to find character
+    for (auto i = start; i < text.size(); i++) {
         if (text[i] == '.') dotCount++;
         else if (text[i] >= '0' && text[i] <= '9') digitCount++;
         else throw std::invalid_argument("not a finite decimal: " + text);
