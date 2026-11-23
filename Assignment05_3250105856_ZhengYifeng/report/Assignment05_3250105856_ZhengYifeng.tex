@@ -58,7 +58,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic code/Fraction.cpp code/main.cpp -o ../fr
 
 {\small
 \setlength{\tabcolsep}{5pt}
-\renewcommand{\arraystretch}{1.10}
+\renewcommand{\arraystretch}{1.06}
 \noindent\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.188\linewidth}
     >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{0.285\linewidth}@{}}
 \toprule
@@ -73,6 +73,7 @@ Decimal strings & \code{"1.414"}, \code{"-0.25"}, \code{"+.5"} & \code{707/500},
 Stream input and output & Read \code{"6/-8 2/4"}, then print both fractions & \code{-3/4 1/2} \\
 Wrong separator & Read \code{"6:8"} into the first fraction & \code{failed: true}, fraction remains \code{-3/4} \\
 Empty decimal & Pass \code{""} to \code{fromDecimal} & \code{invalid\_argument} \\
+Trailing letters & Pass \code{"1.23abc"} to \code{fromDecimal} & \code{invalid\_argument} \\
 Zero denominator & Construct \code{Fraction(6, 0)} & \code{invalid\_argument} \\
 Division by zero & Divide \code{1/2} by the default fraction & \code{invalid\_argument} \\
 Zero in stream input & Read \code{"6/0"} into the first fraction & \code{invalid\_argument}, fraction remains \code{-3/4} \\
@@ -96,7 +97,7 @@ class is built successfully.
 \item debug and learn the errors I made.
 \item think up the test cases and the test program
 \item check the correctness of my comments and codes
-\item fix the handling of invalid input in \code{fromDecimal}
+\item fix the handling of invalid input in \code{fromDecimal}, for example, \textquotedbl 1.23abc\textquotedbl.
 \end{enumerate}
 
 \end{document}

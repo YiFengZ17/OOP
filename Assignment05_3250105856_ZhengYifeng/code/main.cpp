@@ -57,6 +57,13 @@ int main() {
         std::cout << "invalid_argument\n";
     }
 
+    std::cout << "Decimal with trailing letters (1.23abc): ";
+    try {
+        std::cout << Fraction::fromDecimal("1.23abc") << '\n';
+    } catch (const std::invalid_argument&) {
+        std::cout << "invalid_argument\n";
+    }
+
     std::cout << "Construct 6/0: ";
     try {
         std::cout << Fraction(6, 0) << '\n';

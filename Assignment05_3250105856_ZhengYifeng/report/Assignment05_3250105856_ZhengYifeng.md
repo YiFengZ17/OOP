@@ -37,6 +37,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic code/Fraction.cpp code/main.cpp -o ../fr
 | Stream input and output | Read `"6/-8 2/4"`, then print both fractions | `-3/4 1/2` |
 | Wrong separator | Read `"6:8"` into the first fraction | `failed: true`, fraction remains `-3/4` |
 | Empty decimal | Pass `""` to `fromDecimal` | `invalid_argument` |
+| Trailing letters | Pass `"1.23abc"` to `fromDecimal` | `invalid_argument` |
 | Zero denominator | Construct `Fraction(6, 0)` | `invalid_argument` |
 | Division by zero | Divide `1/2` by the default fraction | `invalid_argument` |
 | Zero in stream input | Read `"6/0"` into the first fraction | `invalid_argument`, fraction remains `-3/4` |
@@ -51,4 +52,4 @@ The tests cover the required operations and selected error cases, which tells th
 1. debug and learn the errors I made.
 2. think up the test cases and the test program
 3. check the correctness of my comments and codes
-4. fix the handling of invalid input in `fromDecimal`
+4. fix the handling of invalid input in `fromDecimal`, for example, "1.23abc".
