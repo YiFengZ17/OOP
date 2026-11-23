@@ -33,4 +33,4 @@ The program prints each result so you can check it against the test table in the
 
 Stream input and output use `numerator/denominator`. For example, `6/-8` is read as `-3/4`. A wrong separator sets the stream's failure flag. A zero denominator is rejected by the constructor, including when the fraction is read from a stream.
 
-Pass valid finite decimal text to `fromDecimal`, such as `1.414`, `-0.25`, and `+.5`. The digits and the power-of-ten denominator must fit in the supported integer range. The parser can read only the numeric prefix of malformed input. The full list of test cases is in the report.
+Pass valid finite decimal text to `fromDecimal`, such as `1.414`, `-0.25`, and `+.5`. Any other text, such as `1.5abc`, `1.2.3` or `1e5`, and numbers with more than 18 digits throw `std::invalid_argument`. The full list of test cases is in the report.

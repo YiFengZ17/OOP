@@ -55,6 +55,20 @@ std::string Fraction::ToString()const{
 }
 // Remove the decimal point and keep track of its original place value.
 Fraction Fraction::fromDecimal(const std::string text) {
+    // Allow one leading sign, then only digits and at most one '.'.
+    size_t start = (!text.empty() && (text[0] == '+' || text[0] == '-')) ? 1 : 0;
+    int digitCount = 0;
+    int dotCount = 0;
+    for (size_t i = start; i < text.size(); i++) {
+        if (text[i] == '.') dotCount++;
+        else if (text[i] >= '0' && text[i] <= '9') digitCount++;
+        else throw std::invalid_argument("not a finite decimal: " + text);
+    }
+    // At most 18 digits keeps both the numerator and 10^places inside long long.
+    if (digitCount == 0 || dotCount > 1 || digitCount > 18) {
+        throw std::invalid_argument("not a finite decimal: " + text);
+    }
+
     std::string digits = text;
     const auto dot = std::find(digits.begin(),digits.end(),'.');//find the position of '.' using iterator
     long long denominator = 1;
@@ -114,33 +128,24 @@ Fraction operator/(const Fraction& a, const Fraction& b){
     long long denominator = a.denominator() * b.numerator();
     return Fraction(numerator,denominator);
 }
-bool operator>(const Fraction& a, const Fraction& b){
-    long long nume_a = a.numerator() * b.denominator();
-    long long nume_b = b.numerator() * a.denominator();
-    return nume_a > nume_b;
-}
-bool operator>=(const Fraction& a, const Fraction& b){
-    long long nume_a = a.numerator() * b.denominator();
-    long long nume_b = b.numerator() * a.denominator();
-    return nume_a >= nume_b; 
-}
+// Only < and == do real work; the other four are built from them.
+// Both denominators are positive, so cross multiplication keeps the order.
 bool operator<(const Fraction& a, const Fraction& b){
-    long long nume_a = a.numerator() * b.denominator();
-    long long nume_b = b.numerator() * a.denominator();
-    return nume_a < nume_b;
+    return a.numerator() * b.denominator() < b.numerator() * a.denominator();
 }
-bool operator<=(const Fraction& a, const Fraction& b){
-    long long nume_a = a.numerator() * b.denominator();
-    long long nume_b = b.numerator() * a.denominator();
-    return nume_a <= nume_b;
-}
+// Both fractions are reduced, so equal values have the same numerator and denominator.
 bool operator==(const Fraction& a, const Fraction& b){
-    long long nume_a = a.numerator() * b.denominator();
-    long long nume_b = b.numerator() * a.denominator();
-    return nume_a == nume_b;
+    return a.numerator() == b.numerator() && a.denominator() == b.denominator();
 }
 bool operator!=(const Fraction& a, const Fraction& b){
-    long long nume_a = a.numerator() * b.denominator();
-    long long nume_b = b.numerator() * a.denominator();
-    return nume_a != nume_b;
+    return !(a == b);
+}
+bool operator>(const Fraction& a, const Fraction& b){
+    return b < a;
+}
+bool operator<=(const Fraction& a, const Fraction& b){
+    return !(b < a);
+}
+bool operator>=(const Fraction& a, const Fraction& b){
+    return !(a < b);
 }

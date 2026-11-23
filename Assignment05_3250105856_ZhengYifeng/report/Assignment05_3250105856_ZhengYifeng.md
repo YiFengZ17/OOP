@@ -51,3 +51,4 @@ The tests cover the required operations and selected error cases, which tells th
 1. debug and learn the errors I made.
 2. think up the test cases and the test program
 3. check the correctness of my comments and codes
+4. fix the handling of invalid input in `fromDecimal`
