@@ -22,7 +22,7 @@ static long long gcd(long long a, long long b){
 // default constructor
 Fraction::Fraction(): nume(0) ,deno(1){} 
 
-// normalization constructor: reject a zero denominator, move the sign to the numerator, and reduce
+// normalization constructor: reject a zero denominator, move the sign to the numerator, and divide the Gcd
 Fraction::Fraction(long long numerator,long long denominator): nume(numerator),deno(denominator){
     if(deno == 0){
         throw std::invalid_argument("denominator cannot be zero");
