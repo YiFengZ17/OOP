@@ -11,15 +11,15 @@ public:
     Fraction(const Fraction& other);
     Fraction& operator=(const Fraction& other); // '=' overloading must be a member function
 
-    std::string ToString() const;
-    static Fraction fromDecimal(const std::string text);
+    std::string toString() const;
+    static Fraction fromDecimal(const std::string& text);
     explicit operator double() const;// T操作符，使用 explicit 避免隐式转换
     
     long long numerator() const{return nume;}
     long long denominator() const{return deno;}
 
     // protect the numerator and denominator from being edited from outside
-    private:
+private:
     long long nume;
     long long deno;
 

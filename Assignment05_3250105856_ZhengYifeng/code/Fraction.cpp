@@ -3,7 +3,7 @@
 #include<algorithm>
 
 
-long long gcd(long long a, long long b){
+static long long gcd(long long a, long long b){
     if(a < 0)a = -a;
     if(a == 0)return b;
     if(a < b){
@@ -22,9 +22,9 @@ long long gcd(long long a, long long b){
 // default constructor
 Fraction::Fraction(): nume(0) ,deno(1){} 
 
-// normalization function
+// normalization constructor: reject a zero denominator, move the sign to the numerator, and reduce
 Fraction::Fraction(long long numerator,long long denominator): nume(numerator),deno(denominator){
-        if(deno == 0){
+    if(deno == 0){
         throw std::invalid_argument("denominator cannot be zero");
     }
 
@@ -50,11 +50,11 @@ Fraction& Fraction::operator=(const Fraction& other){
     return *this;
 }
 
-std::string Fraction::ToString()const{
+std::string Fraction::toString()const{
     return std::to_string(this->nume) + "/" + std::to_string(this->deno);
 }
 // Remove the decimal point and keep track of its original place value.
-Fraction Fraction::fromDecimal(const std::string text) {
+Fraction Fraction::fromDecimal(const std::string& text) {
     // Allow one leading sign, then only digits and at most one '.'.
     size_t start = (!text.empty() && (text[0] == '+' || text[0] == '-')) ? 1 : 0;
     int digitCount = 0;
@@ -91,7 +91,7 @@ Fraction::operator double() const {
 }
 
 std::ostream& operator<<(std::ostream& os, const Fraction& a) {
-    return os << a.ToString();
+    return os << a.toString();
 }
 std::istream& operator>>(std::istream& is, Fraction& a){
     long long numerator;

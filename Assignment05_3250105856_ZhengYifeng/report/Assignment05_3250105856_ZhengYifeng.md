@@ -32,7 +32,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic code/Fraction.cpp code/main.cpp -o ../fr
 | Copy and assignment | Copy `-3/4` and assign the copy | `-3/4` and `-3/4` |
 | Arithmetic | `1/2` and `1/3` with `+`, `-`, `*`, `/` | `5/6`, `1/6`, `1/6`, `3/2` |
 | Comparisons | `-3/4 < 1/3`, `1/3 <= 1/2`, `1/2 == 2/4`, `1/2 != 1/3`, `1/2 >= 2/4`, `1/2 > 1/3` | Six `true` values |
-| String and double | `ToString()` on `2/3` and a cast of `1/4` to `double` | `2/3` and `0.25` |
+| String and double | `toString()` on `2/3` and a cast of `1/4` to `double` | `2/3` and `0.25` |
 | Decimal strings | `"1.414"`, `"-0.25"`, `"+.5"` | `707/500`, `-1/4`, `1/2` |
 | Stream input and output | Read `"6/-8 2/4"`, then print both fractions | `-3/4 1/2` |
 | Wrong separator | Read `"6:8"` into the first fraction | `failed: true`, fraction remains `-3/4` |

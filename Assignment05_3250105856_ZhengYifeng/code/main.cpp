@@ -30,7 +30,7 @@ int main() {
               << (a >= Fraction(2, 4)) << ' ' << (a > b) << '\n';
 
     // Test conversion to and from other types.
-    std::cout << "As string: " << Fraction(2, 3).ToString() << '\n';
+    std::cout << "As string: " << Fraction(2, 3).toString() << '\n';
     std::cout << "As double: " << static_cast<double>(Fraction(1, 4)) << '\n';
     std::cout << "Decimals (1.414, -0.25, +.5): "
               << Fraction::fromDecimal("1.414") << ' '
