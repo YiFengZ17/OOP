@@ -1,11 +1,11 @@
 #include"Vector.h"
 #include<stdexcept>
 
-// default ctor, an empty vector has no array
+// default ctor
 template <class T>
 Vector<T>::Vector() : m_pElements(nullptr),m_nSize(0),m_nCapacity(0){}
 
-// ctor, create 'size' elements with the default value (0 for int)
+// ctor
 template <class T>
 Vector<T>::Vector(int size) : m_pElements(nullptr),m_nSize(size),m_nCapacity(size){
     if(size < 0){

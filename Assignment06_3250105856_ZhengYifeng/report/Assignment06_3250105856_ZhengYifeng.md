@@ -24,7 +24,7 @@ Both `operator[]` and `at()` return an element by reference. `operator[]` uses t
 
 ### 2.4 Copying
 
-The copy constructor and `operator=` both copy every element into a new array. The given declaration has no `operator=`, and the default one only copies the pointer, so `a = b` freed the same array twice. I added `operator=` (the Rule of Three); it checks self-assignment and builds the new array before releasing the old one.
+The copy constructor and `operator=` both copy every element into a new array. The given declaration has no `operator=`, and the default one only copies the pointer, so `a = b` freed the same array twice, So I added `operator=`。
 
 ## 3 Testing
 
@@ -54,7 +54,7 @@ All ten test groups passed. The Vector class is built correctly.
 
 ## 5 AI Use in the Lab
 
-1. debug the program, fix small errors, and polish the comments, code style and report wording.
-2. fix memory leaks and learn how to manage dynamically allocated memory, including adding `operator=` to avoid the shallow copy.
-3. find `v.push_back(v[0])` special case, and handle it.
-4. generate test cases and part of the test program, including the copy assignment and vector-of-vectors tests, and keep asserts active under `NDEBUG`.
+1. debug the program and polish the comments.
+2. fix memory leaks and learn how to manage dynamically allocated memory.
+3. find `v.push_back(v[0])` special case and the importance of overloading `=`, and handle them.
+4. generate test cases and part of the test program.

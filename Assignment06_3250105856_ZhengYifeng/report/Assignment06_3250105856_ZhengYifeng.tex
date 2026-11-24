@@ -1,6 +1,7 @@
 \documentclass[10pt,a4paper]{article}
 \usepackage[hmargin=1.7cm,vmargin=1.2cm]{geometry}
 \usepackage{fontspec}
+\newfontfamily\punctfont{Noto Serif CJK SC}
 \usepackage{booktabs,tabularx}
 \usepackage{titlesec}
 \usepackage{enumitem}
@@ -43,8 +44,7 @@ This keeps \texttt{v.push\_back(v[0])} safe when growth releases the array that 
 
 \subsection{Copying}
 The copy constructor and \texttt{operator=} both copy every element into a new array.
-The given declaration has no \texttt{operator=}, and the default one only copies the pointer, so \texttt{a = b} freed the same array twice.
-I added \texttt{operator=} (the Rule of Three); it checks self-assignment and builds the new array before releasing the old one.
+The given declaration has no \texttt{operator=}, and the default one only copies the pointer, so \texttt{a = b} freed the same array twice, So I added \texttt{operator=}{\punctfont 。}
 
 \section{Testing}
 Run from the assignment directory. All test inputs are in \texttt{main.cpp}.
@@ -80,9 +80,9 @@ All ten test groups passed. The Vector class is built correctly.
 
 \section{AI Use in the Lab}
 \begin{enumerate}
-  \item debug the program, fix small errors, and polish the comments, code style and report wording.
-  \item fix memory leaks and learn how to manage dynamically allocated memory, including adding \texttt{operator=} to avoid the shallow copy.
-  \item find \texttt{v.push\_back(v[0])} special case, and handle it.
-  \item generate test cases and part of the test program, including the copy assignment and vector-of-vectors tests, and keep asserts active under \texttt{NDEBUG}.
+  \item debug the program and polish the comments.
+  \item fix memory leaks and learn how to manage dynamically allocated memory.
+  \item find \texttt{v.push\_back(v[0])} special case and the importance of overloading \texttt{=}, and handle them.
+  \item generate test cases and part of the test program.
 \end{enumerate}
 \end{document}
