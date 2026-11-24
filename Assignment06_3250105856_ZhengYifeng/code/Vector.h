@@ -8,7 +8,9 @@ public:
   Vector();                      // creates an empty vector
   Vector(int size);              // creates a vector for holding 'size' elements
   Vector(const Vector& r);       // the copy ctor
-  ~Vector();                     // destructs the vector 
+  ~Vector();                     // destructs the vector
+  Vector& operator=(const Vector& r); // copy assignment, added to avoid the shallow copy
+                                      // (not in the given declaration, see README)
   T& operator[](int index);      // accesses the specified element without bounds checking
   T& at(int index);              // accesses the specified element, throws an exception of
                                  // type 'std::out_of_range' when index <0 or >=m_nSize

@@ -1,3 +1,5 @@
+// Keep assert active even when NDEBUG is defined, or the checks would be removed.
+#undef NDEBUG
 #include <cassert>
 #include <iostream>
 #include <stdexcept>
@@ -101,6 +103,41 @@ int main() {
     assert(repeated.size() == 2);
     assert(repeated[0] == "hello" && repeated[1] == "hello");
     std::cout << "PASS: append an existing element during growth" << std::endl;
+
+    // Assignment gives the left side its own array, so both objects stay independent.
+    {
+        Vector<int> source;
+        source.push_back(1);
+        source.push_back(2);
+        Vector<int> target(5);
+        target = source;
+        assert(target.size() == 2 && target[0] == 1 && target[1] == 2);
+        target[0] = 100;
+        assert(source[0] == 1);
+
+        target = target;
+        assert(target.size() == 2 && target[0] == 100);
+
+        Vector<int> nothing;
+        target = nothing;
+        assert(target.empty());
+        target.push_back(9);
+        assert(target.size() == 1 && nothing.empty());
+    }
+    std::cout << "PASS: copy assignment and self-assignment" << std::endl;
+
+    // Growing a vector of vectors copies each inner vector with operator=.
+    {
+        Vector<int> inner(2);
+        Vector<Vector<int>> table;
+        for (int i = 0; i < 10; ++i) {
+            table.push_back(inner);
+        }
+        table[0][0] = 5;
+        assert(table.size() == 10 && table[0][0] == 5);
+        assert(table[9][0] == 0 && inner[0] == 0);
+    }
+    std::cout << "PASS: vector of vectors" << std::endl;
 
     return 0;
 }

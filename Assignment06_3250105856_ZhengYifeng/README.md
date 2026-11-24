@@ -27,4 +27,6 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic code/main.cpp -o ../vector06-test
 ../vector06-test
 ```
 
-The program needs no keyboard input or data files. It uses assertions to check the results and prints eight `PASS` lines when all tests pass.
+The program needs no keyboard input or data files. It uses assertions to check the results and prints ten `PASS` lines when all tests pass. The assertions stay active even if `NDEBUG` is defined.
+
+The given declaration has no copy assignment operator, so `Vector.h` adds `operator=`. Without it, `a = b` and a `Vector` of `Vector`s would copy only the pointer and free the same array twice.
